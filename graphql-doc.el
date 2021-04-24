@@ -152,6 +152,17 @@ fragment TypeRef on __Type {
     (promise-catch (lambda (data)
                      (message "error: %s" data)))))
 
+(defcustom graphql-doc-apis nil
+  "alist mapping name to an api plist")
+
+(defun graphql-doc-add-api (name api)
+  "Add an entry (NAME . API) to apis alist."
+  (add-to-list 'graphql-doc-apis `(,name . ,api)))
+
+(defun graphql-doc--get-api (name)
+  "Get API plist out of graphql-doc-apis."
+  (cdr (assoc name graphql-doc-apis)))
+  
 (provide 'graphql-doc)
 
 ;;; graphql-doc.el ends here
