@@ -1,0 +1,6 @@
+* GraphQL Doc
+A GraphQL Documentation Explorer
+
+[[/assets/root.png]]
+[[/assets/queries.png]]
+[[/assets/types.png]]
