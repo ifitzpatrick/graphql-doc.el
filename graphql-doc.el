@@ -117,8 +117,8 @@ fragment TypeRef on __Type {
   }
 }")
 
-(defun graphql-doc--request (url data)
-  "Helper function to make http requests to graphql endpoints."
+(defun graphql-doc--request (url data headers)
+  "GraphQL request to URL with DATA and HEADERS."
   (promise-new
    (lambda (resolve reject)
      (request
@@ -127,6 +127,8 @@ fragment TypeRef on __Type {
        :parser 'json-read
        :data
        data
+       :headers
+       headers
        :error
        (cl-function
         (lambda (&key response &allow-other-keys)
@@ -146,21 +148,24 @@ fragment TypeRef on __Type {
        (append
         (plist-get api :data)
         `(("variables" . "")
-          ("query" . ,graphql-doc--introspection-query))))
+          ("query" . ,graphql-doc--introspection-query)))
+       (plist-get api :headers))
     (then (lambda (data)
             (setq-local graphql-doc--introspection-results data)))
     (promise-catch (lambda (data)
                      (message "error: %s" data)))))
 
 (defcustom graphql-doc-apis nil
-  "alist mapping name to an api plist")
+  "Alist mapping name to an api plist."
+  :group 'graphql-doc
+  :type '(alist))
 
 (defun graphql-doc-add-api (name api)
   "Add an entry (NAME . API) to apis alist."
   (add-to-list 'graphql-doc-apis `(,name . ,api)))
 
 (defun graphql-doc--get-api (name)
-  "Get API plist out of graphql-doc-apis."
+  "Get api plist NAME out of graphql-doc-apis."
   (cdr (assoc name graphql-doc-apis)))
 
 (defun graphql-doc--get (key-list list)
