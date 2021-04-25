@@ -13,7 +13,7 @@ Using straight.el and use-package.el (see [[https://github.com/raxod502/straight
   :straight '(graphql-doc
               :type git
               :host github
-              :repo "ifitzpatrick/graphql-doc")
+              :repo "ifitzpatrick/graphql-doc.el")
 :config
 (graphql-doc-add-api
    "GDC (national cancer institute)" ; Name that will be displayed in completing-read when you start graphql-doc
