@@ -191,6 +191,20 @@ fragment TypeRef on __Type {
    (lambda (type) (equal (graphql-doc--get '(name) type) "Mutation"))
    (graphql-doc--get-types)))
 
+(defvar-local graphql-doc--history nil
+  "List of cons cells with a name and callback that can redraw each entry.")
+
+(defun graphql-doc--history-push (name callback)
+  "Add history entry with NAME and CALLBACK."
+  (setq-local graphql-doc--history (cons `(,name . ,callback) graphql-doc--history)))
+
+(defun graphql-doc-go-back ()
+  "Go back to previous history entry."
+  (interactive)
+  (when (> (length graphql-doc--history) 1)
+    (setq-local graphql-doc--history (cdr graphql-doc--history))
+    (funcall (cdr (car graphql-doc--history)))))
+
 (provide 'graphql-doc)
 
 ;;; graphql-doc.el ends here
