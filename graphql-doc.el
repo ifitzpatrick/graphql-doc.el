@@ -162,7 +162,35 @@ fragment TypeRef on __Type {
 (defun graphql-doc--get-api (name)
   "Get API plist out of graphql-doc-apis."
   (cdr (assoc name graphql-doc-apis)))
-  
+
+(defun graphql-doc--get (key-list list)
+  "Follow KEY-LIST to get property out of LIST."
+  (if (and key-list list)
+      (graphql-doc--get (cdr key-list) (assq (car key-list) list))
+    (cdr list)))
+
+(defun graphql-doc--get-types ()
+  "Get info about types supported by endpoint."
+  (graphql-doc--get '(data __schema types) graphql-doc--introspection-results))
+
+(defun graphql-doc--get-type (name)
+  "Get info about type NAME."
+  (seq-find
+   (lambda (type) (equal name (graphql-doc--get '(name) type)))
+   (graphql-doc--get-types)))
+
+(defun graphql-doc--queries ()
+  "Get info about queries supported by endpoint."
+  (seq-find
+   (lambda (type) (equal (graphql-doc--get '(name) type) "Query"))
+   (graphql-doc--get-types)))
+
+(defun graphql-doc--mutations ()
+  "Get info about mutations supported by endpoint."
+  (seq-find
+   (lambda (type) (equal (graphql-doc--get '(name) type) "Mutation"))
+   (graphql-doc--get-types)))
+
 (provide 'graphql-doc)
 
 ;;; graphql-doc.el ends here
