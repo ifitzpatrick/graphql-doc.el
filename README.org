@@ -1,9 +1,39 @@
 * GraphQL Doc
 A GraphQL Documentation Explorer
 
-#+attr_org: width 100
 [[/assets/root.png]]
-#+attr_org: width 100
 [[/assets/queries.png]]
-#+attr_org: width 100
 [[/assets/types.png]]
+
+** Installation and Configuration
+Using straight.el and use-package.el (see [[https://github.com/raxod502/straight.el#integration-with-use-package]])
+
+#+begin_src elisp
+(use-package graphql-doc
+  :straight '(graphql-doc
+              :type git
+              :host github
+              :repo "ifitzpatrick/graphql-doc")
+:config
+(graphql-doc-add-api
+   "GDC (national cancer institute)" ; Name that will be displayed in completing-read when you start graphql-doc
+   `(:url "https://api.gdc.cancer.gov/v0/graphql" ; url for graphql endpoint
+     :data nil ; alist of additional post body data items
+     :headers nil ; alist of additional headers
+    )))
+#+end_src
+** Usage
+Call the graphql-doc command and select an endpoint that you added during configuration, and you are good to go!
+** Keybindings
+| Binding     | Command             |
+|-------------+---------------------|
+| C-j         | forward-button      |
+| C-k         | backward-button     |
+| <backspace> | graphql-doc-go-back |
+
+Keybindings on buttons:
+| Binding | Command      |
+|---------+--------------|
+| mouse-1 | follows link |
+| ?\r     | follows link |
+
