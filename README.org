@@ -14,13 +14,13 @@ Using straight.el and use-package.el (see [[https://github.com/raxod502/straight
               :type git
               :host github
               :repo "ifitzpatrick/graphql-doc.el")
-:config
-(graphql-doc-add-api
+  :config
+  (graphql-doc-add-api
    "GDC (national cancer institute)" ; Name that will be displayed in completing-read when you start graphql-doc
    `(:url "https://api.gdc.cancer.gov/v0/graphql" ; url for graphql endpoint
-     :data nil ; alist of additional post body data items
-     :headers nil ; alist of additional headers
-    )))
+          :data nil ; alist of additional post body data items
+          :headers nil ; alist of additional headers
+          )))
 #+end_src
 ** Usage
 Call the graphql-doc command and select an endpoint that you added during configuration, and you are good to go!
