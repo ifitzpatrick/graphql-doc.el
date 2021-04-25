@@ -211,7 +211,7 @@ fragment TypeRef on __Type {
     (funcall (cdr (car graphql-doc--history)))))
 
 (defun graphql-doc--draw-view (callback)
-  "Draw view with NAME and CALLBACK."
+  "Draw view with CALLBACK."
   (setq inhibit-read-only t)
   (erase-buffer)
   (funcall callback)
@@ -346,7 +346,7 @@ fragment TypeRef on __Type {
 ;; Define a key in the keymap
 (define-key graphql-doc-mode-map (kbd "C-j") 'forward-button)
 (define-key graphql-doc-mode-map (kbd "C-k") 'backward-button)
-(define-key graphql-doc-mode-map (kbd "<backspace>") 'graphql-doc--go-back)
+(define-key graphql-doc-mode-map (kbd "<backspace>") 'graphql-doc-go-back)
 
 (define-derived-mode graphql-doc-mode
   special-mode "GraphQL Doc"
@@ -362,12 +362,17 @@ fragment TypeRef on __Type {
   "Display GraphQL Doc buffer named BASE-NAME."
   (switch-to-buffer-other-window (generate-new-buffer-name (concat "*graphql-doc " base-name "*"))))
 
+(defun graphql-doc--display-loading ()
+  "Display loading screen."
+  (graphql-doc--draw-view (lambda () (insert "Loading..."))))
+
 (defun graphql-doc--start (name)
   "Initialize GraphQL Doc buffer for api NAME."
   (let ((buf (graphql-doc--display-buffer name)))
     (with-current-buffer buf
       (setq-local graphql-doc--history nil)
       (graphql-doc-mode)
+      (graphql-doc--display-loading)
       (promise-chain (graphql-doc--request-introspection (graphql-doc--get-api name))
         (then
          (lambda (_)
@@ -390,8 +395,7 @@ fragment TypeRef on __Type {
   (interactive)
   (graphql-doc--start (completing-read
                        "Choose API: "
-                       (seq-map (lambda (api) (plist-get api :name))
-                                graphql-doc-apis))))
+                       graphql-doc-apis)))
 
 (provide 'graphql-doc)
 
