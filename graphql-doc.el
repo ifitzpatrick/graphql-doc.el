@@ -205,6 +205,189 @@ fragment TypeRef on __Type {
     (setq-local graphql-doc--history (cdr graphql-doc--history))
     (funcall (cdr (car graphql-doc--history)))))
 
+(defun graphql-doc--draw-view (callback)
+  "Draw view with NAME and CALLBACK."
+  (setq inhibit-read-only t)
+  (erase-buffer)
+  (funcall callback)
+  (setq inhibit-read-only nil)
+  (goto-char (point-min)))
+
+(defun graphql-doc--view (name callback)
+  "Draw view with NAME and CALLBACK and and to history."
+  (graphql-doc--history-push name (lambda () (graphql-doc--draw-view callback)))
+  (graphql-doc--draw-view callback))
+
+(defun graphql-doc--draw-object-type-button (type)
+  "Draw a button for TYPE."
+  (let ((kind (graphql-doc--get '(kind) type))
+        (of-type (graphql-doc--get '(ofType) type))
+        (name (graphql-doc--get '(name) type)))
+    (cond ((equal kind "LIST")
+           (graphql-doc--draw-object-type-button of-type)
+           (insert "[]"))
+          ((equal kind "NON_NULL")
+           (graphql-doc--draw-object-type-button of-type)
+           (insert "!"))
+          ;; (type ))
+          (t (if type
+                 (graphql-doc--draw-button
+                  name
+                  (lambda ()
+                    (interactive)
+                    (graphql-doc--draw-object-page
+                     (graphql-doc--get-type name))))
+               (insert name))))))
+  
+(defun graphql-doc--draw-object-arg-button (arg)
+  "Draw a button for ARG."
+  (insert (graphql-doc--get '(name) arg) ": ")
+  (graphql-doc--draw-object-type-button (graphql-doc--get '(type) arg)))
+
+(defun graphql-doc--draw-object-arg-buttons (args)
+  "Draw a list of ARGS."
+  (when (> (length args) 0)
+    (insert "(")
+    (seq-map-indexed
+     (lambda (arg idx)
+       (graphql-doc--draw-object-arg-button arg)
+       (when (< idx (- (length args) 1))
+         (insert ", ")))
+     args)
+    (insert ")")))
+
+(defun graphql-doc--draw-object-name-buttons (item)
+  "Draw buttons for ITEM name."
+  (let ((name (graphql-doc--get '(name) item))
+        (args (graphql-doc--get '(args) item))
+        (type (graphql-doc--get '(type) item)))
+    (graphql-doc--draw-button name (graphql-doc--get-callback item))
+    (graphql-doc--draw-object-arg-buttons args)
+    (when type
+      (insert ": ")
+      (graphql-doc--draw-object-type-button type))
+    (insert "\n\n")))
+
+(defun graphql-doc--draw-list-item (item)
+  "Draw ITEM in a list."
+  (graphql-doc--draw-object-name-buttons item)
+  (graphql-doc--draw-object-description item))
+
+(defun graphql-doc--draw-list-separator (title)
+  "Draw list item with TITLE."
+  (insert "-----" title "-----" "\n\n"))
+
+(defun graphql-doc--draw-list (item list-key title)
+  "Draw a list of graphql properties from ITEM using LIST-KEY to get the list, with TITLE."
+  (let ((item-list (graphql-doc--get (list list-key) item)))
+    (when item-list
+      (graphql-doc--draw-list-separator title)
+      (seq-map
+       #'graphql-doc--draw-list-item
+       item-list))))
+
+(defun graphql-doc--draw-object-description (graphql-object)
+  "Draw GRAPHQL-OBJECT description if present."
+  (let ((description (graphql-doc--get '(description) graphql-object)))
+    (when (> (length description) 0)
+      (insert description "\n\n"))))
+
+(defun graphql-doc--draw-object (graphql-object)
+  "Draw page for GRAPHQL-OBJECT."
+  (insert "Name: " (graphql-doc--get '(name) graphql-object) "\n\n")
+  (graphql-doc--draw-object-description graphql-object))
+
+(defun graphql-doc--draw-button (label next)
+  "Base button with LABEL and call NEXT when pressed."
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-1] next)
+    (define-key map [?\r] next)
+    (insert-text-button label 'keymap map)))
+
+(defun graphql-doc--get-callback (graphql-object)
+  "Create view callback for GRAPHQL-OBJECT."
+  (lambda ()
+     (interactive)
+     (graphql-doc--draw-object-page graphql-object)))
+
+(defun graphql-doc--draw-object-page (query-object)
+  "Draw page for QUERY-OBJECT."
+  (graphql-doc--view
+   (graphql-doc--get '(name) query-object)
+   (lambda ()
+     (graphql-doc--draw-object query-object)
+     (graphql-doc--draw-list query-object 'args "Arguments")
+     (graphql-doc--draw-list query-object 'fields "Fields")
+     (graphql-doc--draw-list query-object 'inputFields "Fields")
+     (graphql-doc--draw-list query-object 'enumValues "Enum Values"))))
+                          
+(defun graphql-doc--draw-root-page (name items)
+  "Draw root page NAME with ITEMS representing root operations."
+  (graphql-doc--view
+   name
+   (lambda ()
+     (seq-map
+      (lambda (item)
+        (let ((name (graphql-doc--get '(name) item))
+              (next (graphql-doc--get '(next) item)))
+          (graphql-doc--draw-button name next)
+          (insert "\n\n")
+          (graphql-doc--draw-object-description item)))
+      items))))
+     
+(defvar graphql-doc-mode-map (make-sparse-keymap)
+  "The keymap for graphql-doc-mode.")
+
+;; Define a key in the keymap
+(define-key graphql-doc-mode-map (kbd "C-j") 'forward-button)
+(define-key graphql-doc-mode-map (kbd "C-k") 'backward-button)
+(define-key graphql-doc-mode-map (kbd "<backspace>") 'graphql-doc--go-back)
+
+(define-derived-mode graphql-doc-mode
+  special-mode "GraphQL Doc"
+  "Major mode for GraphQL Doc viewing.")
+
+(defun graphql-doc-reset ()
+  "Reset vars."
+  (interactive)
+  (setq-local graphql-doc--history nil)
+  (setq-local graphql-doc--introspection-results nil))
+
+(defun graphql-doc--display-buffer (base-name)
+  "Display GraphQL Doc buffer named BASE-NAME."
+  (switch-to-buffer-other-window (generate-new-buffer-name (concat "*graphql-doc " base-name "*"))))
+
+(defun graphql-doc--start (name)
+  "Initialize GraphQL Doc buffer for api NAME."
+  (let ((buf (graphql-doc--display-buffer name)))
+    (with-current-buffer buf
+      (setq-local graphql-doc--history nil)
+      (graphql-doc-mode)
+      (promise-chain (graphql-doc--request-introspection (graphql-doc--get-api name))
+        (then
+         (lambda (_)
+           (graphql-doc--draw-root-page
+            "Root"
+            '(((name . "queries")
+               (description . "Available queries")
+               (next . (lambda () (interactive)
+                         (graphql-doc--draw-object-page
+                          (graphql-doc--queries)))))
+              ((name . "mutations")
+               (description . "Available mutations")
+               (next . (lambda () (interactive)
+                         (graphql-doc--draw-object-page
+                          (graphql-doc--mutations)))))))))
+        (promise-catch (lambda (reason) (message "failed to load %s" reason)))))))
+
+(defun graphql-doc ()
+  "Open graphql doc buffer."
+  (interactive)
+  (graphql-doc--start (completing-read
+                       "Choose API: "
+                       (seq-map (lambda (api) (plist-get api :name))
+                                graphql-doc-apis))))
+
 (provide 'graphql-doc)
 
 ;;; graphql-doc.el ends here
