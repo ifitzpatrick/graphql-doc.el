@@ -197,16 +197,28 @@ fragment TypeRef on __Type {
    (lambda (type) (equal name (graphql-doc--get '(name) type)))
    (graphql-doc--get-types)))
 
+(defun graphql-doc--get-query-type ()
+  "Get name of queryType."
+  (graphql-doc--get '(data __schema queryType name)
+                    graphql-doc--introspection-results))
+
+(defun graphql-doc--get-mutation-type ()
+  "Get name of queryType."
+  (graphql-doc--get '(data __schema mutationType name)
+                    graphql-doc--introspection-results))
+
 (defun graphql-doc--queries ()
   "Get info about queries supported by endpoint."
   (seq-find
-   (lambda (type) (equal (graphql-doc--get '(name) type) "Query"))
+   (lambda (type) (equal (graphql-doc--get '(name) type)
+                         (graphql-doc--get-query-type)))
    (graphql-doc--get-types)))
 
 (defun graphql-doc--mutations ()
   "Get info about mutations supported by endpoint."
   (seq-find
-   (lambda (type) (equal (graphql-doc--get '(name) type) "Mutation"))
+   (lambda (type) (equal (graphql-doc--get '(name) type)
+                         (graphql-doc--get-mutation-type)))
    (graphql-doc--get-types)))
 
 (defvar-local graphql-doc--history nil
