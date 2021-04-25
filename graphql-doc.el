@@ -385,7 +385,7 @@ fragment TypeRef on __Type {
 
 (defun graphql-doc--display-buffer (base-name)
   "Display GraphQL Doc buffer named BASE-NAME."
-  (switch-to-buffer-other-window (generate-new-buffer-name (concat "*graphql-doc " base-name "*"))))
+  (switch-to-buffer (generate-new-buffer-name (concat "*graphql-doc " base-name "*"))))
 
 (defun graphql-doc--display-loading ()
   "Display loading screen."

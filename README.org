@@ -1,6 +1,9 @@
 * GraphQL Doc
 A GraphQL Documentation Explorer
 
+#+attr_org: width 100
 [[/assets/root.png]]
+#+attr_org: width 100
 [[/assets/queries.png]]
+#+attr_org: width 100
 [[/assets/types.png]]
