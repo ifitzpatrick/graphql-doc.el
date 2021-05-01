@@ -391,14 +391,14 @@ fragment TypeRef on __Type {
   "Display loading screen."
   (graphql-doc--draw-view (lambda () (insert "Loading..."))))
 
-(defun graphql-doc--start (name)
+(defun graphql-doc--start (name api)
   "Initialize GraphQL Doc buffer for api NAME."
   (let ((buf (graphql-doc--display-buffer name)))
     (with-current-buffer buf
       (setq-local graphql-doc--history nil)
       (graphql-doc-mode)
       (graphql-doc--display-loading)
-      (promise-chain (graphql-doc--request-introspection (graphql-doc--get-api name))
+      (promise-chain (graphql-doc--request-introspection api)
         (then
          (lambda (_)
            (graphql-doc--draw-root-page
@@ -415,12 +415,20 @@ fragment TypeRef on __Type {
                           (graphql-doc--mutations)))))))))
         (promise-catch (lambda (reason) (message "failed to load %s" reason)))))))
 
+(defun graphql-doc-open-url (url)
+  "Open URL in graphql doc buffer."
+  (interactive "surl: ")
+  (graphql-doc--start
+   url
+   `(:url ,url)))
+
 (defun graphql-doc ()
   "Open graphql doc buffer."
   (interactive)
-  (graphql-doc--start (completing-read
-                       "Choose API: "
-                       graphql-doc-apis)))
+  (let ((name (completing-read
+               "Choose API: "
+               graphql-doc-apis)))
+    (graphql-doc--start name (graphql-doc--get-api name))))
 
 (provide 'graphql-doc)
 
