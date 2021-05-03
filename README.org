@@ -28,15 +28,17 @@ Using straight.el and use-package.el (see [[https://github.com/raxod502/straight
 ** Usage
 *** Opening the GraphQL Doc Explorer
 There are two commands provided to open up the graphql-doc explorer
-- `graphql-doc` prompts you to select an endpoint added by `graphql-doc-add-api`
+- *graphql-doc* prompts you to select an endpoint added by *graphql-doc-add-api*
+
   Use this for graphql endpoints that you use often, or need additional
   configuration such as authorization headers.
-- `graphql-doc-open-url` prompts you to provide a graphql endpoint url
+- *graphql-doc-open-url* prompts you to provide a graphql endpoint url
+
   Use this to quickly view the documentation for endpoints that don't need
   additional configuration.
 *** Configuring endpoints
-This package provides the function `graphql-doc-add-api` to add endpoints to the alist `graphql-doc-apis`.
-These endpoints are then selectable by name by calling `graphql-doc`.
+This package provides the function *graphql-doc-add-api* to add endpoints to the alist *graphql-doc-apis*.
+These endpoints are then selectable by name by calling *graphql-doc*.
 
 **** Simple
 If the endpoint does not require autorization, you only need to provide a name, and an api configuration with a url.
