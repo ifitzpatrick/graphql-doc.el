@@ -259,7 +259,6 @@ fragment TypeRef on __Type {
           ((equal kind "NON_NULL")
            (graphql-doc--draw-object-type-button of-type)
            (insert "!"))
-          ;; (type ))
           (t (if type
                  (graphql-doc--draw-button
                   name
