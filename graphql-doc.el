@@ -24,7 +24,7 @@
 ;; Author: Ian Fitzpatrick
 ;; Created: April 25, 2021
 ;; Package-Version: 0.0.1
-;; Package-Requires: ((emacs "25.1") (request "0.3.2") (promise "1.1"))
+;; Package-Requires: ((emacs "26.1") (request "0.3.2") (promise "1.1"))
 
 ;;; Commentary:
 ;; GraphQL Documentation explorer
