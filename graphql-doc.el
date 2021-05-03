@@ -23,7 +23,7 @@
 
 ;; Author: Ian Fitzpatrick
 ;; Created: April 25, 2021
-;; Package-Version: 0.0.1
+;; Package-Version: 0.1.0
 ;; Package-Requires: ((emacs "26.1") (request "0.3.2") (promise "1.1"))
 
 ;;; Commentary:
@@ -307,14 +307,25 @@ fragment TypeRef on __Type {
   "Draw list item with TITLE."
   (insert "-----" title "-----" "\n\n"))
 
-(defun graphql-doc--draw-list (item list-key title)
+(defun graphql-doc--draw-list (item-list title)
+  "Draw a list of graphql objects ITEM-LIST with TITLE."
+  (when (> (length item-list) 0)
+    (graphql-doc--draw-list-separator title)
+    (seq-map
+     #'graphql-doc--draw-list-item
+     item-list)))
+
+(defun graphql-doc--draw-key-list (item list-key title)
   "Draw a list of graphql properties from ITEM using LIST-KEY to get the list, with TITLE."
-  (let ((item-list (graphql-doc--get (list list-key) item)))
-    (when item-list
-      (graphql-doc--draw-list-separator title)
-      (seq-map
-       #'graphql-doc--draw-list-item
-       item-list))))
+  (graphql-doc--draw-list (graphql-doc--get (list list-key) item) title))
+
+(defun graphql-doc--draw-type-list (item list-key title)
+  "Draw a list of graphql properties from ITEM using LIST-KEY to get the list, with TITLE."
+  (graphql-doc--draw-list
+   (seq-map
+    (lambda (list-item) (graphql-doc--get-type (graphql-doc--get '(name) list-item)))
+    (graphql-doc--get (list list-key) item))
+   title))
 
 (defun graphql-doc--draw-object-description (graphql-object)
   "Draw GRAPHQL-OBJECT description if present."
@@ -346,11 +357,13 @@ fragment TypeRef on __Type {
    (graphql-doc--get '(name) query-object)
    (lambda ()
      (graphql-doc--draw-object query-object)
-     (graphql-doc--draw-list query-object 'args "Arguments")
-     (graphql-doc--draw-list query-object 'fields "Fields")
-     (graphql-doc--draw-list query-object 'inputFields "Fields")
-     (graphql-doc--draw-list query-object 'enumValues "Enum Values"))))
-                          
+     (graphql-doc--draw-key-list query-object 'args "Arguments")
+     (graphql-doc--draw-type-list query-object 'possibleTypes "Implementations")
+     (graphql-doc--draw-type-list query-object 'interfaces "Interfaces")
+     (graphql-doc--draw-key-list query-object 'fields "Fields")
+     (graphql-doc--draw-key-list query-object 'inputFields "Fields")
+     (graphql-doc--draw-key-list query-object 'enumValues "Enum Values"))))
+
 (defun graphql-doc--draw-root-page (name items)
   "Draw root page NAME with ITEMS representing root operations."
   (graphql-doc--view
