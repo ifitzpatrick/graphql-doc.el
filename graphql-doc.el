@@ -178,7 +178,7 @@ fragment TypeRef on __Type {
   (add-to-list 'graphql-doc-apis `(,name . ,api)))
 
 (defun graphql-doc--get-api (name)
-  "Get api plist NAME out of graphql-doc-apis."
+  "Get api plist NAME out of `graphql-doc-apis.'."
   (cdr (assoc name graphql-doc-apis)))
 
 (defun graphql-doc--get (key-list list)
@@ -366,7 +366,7 @@ fragment TypeRef on __Type {
       items))))
      
 (defvar graphql-doc-mode-map (make-sparse-keymap)
-  "The keymap for graphql-doc-mode.")
+  "The keymap for `graphql-doc-mode'.")
 
 ;; Define a key in the keymap
 (define-key graphql-doc-mode-map (kbd "C-j") 'forward-button)
@@ -392,7 +392,7 @@ fragment TypeRef on __Type {
   (graphql-doc--draw-view (lambda () (insert "Loading..."))))
 
 (defun graphql-doc--start (name api)
-  "Initialize GraphQL Doc buffer for api NAME."
+  "Initialize GraphQL Doc buffer for API NAME."
   (let ((buf (graphql-doc--display-buffer name)))
     (with-current-buffer buf
       (setq-local graphql-doc--history nil)
