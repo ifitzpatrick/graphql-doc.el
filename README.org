@@ -1,5 +1,8 @@
 * GraphQL Doc
-A GraphQL Documentation Explorer
+A GraphQL Documentation Explorer for Emacs
+
+Uses the GraphQL instrospection API to display documentation for queries, mutations,
+and types provided by graphql endpoints.
 
 [[/assets/root.png]]
 [[/assets/queries.png]]
@@ -23,7 +26,45 @@ Using straight.el and use-package.el (see [[https://github.com/raxod502/straight
           )))
 #+end_src
 ** Usage
-Call the graphql-doc command and select an endpoint that you added during configuration, and you are good to go!
+*** Opening the GraphQL Doc Explorer
+There are two commands provided to open up the graphql-doc explorer
+- `graphql-doc` prompts you to select an endpoint added by `graphql-doc-add-api`
+  Use this for graphql endpoints that you use often, or need additional
+  configuration such as authorization headers.
+- `graphql-doc-open-url` prompts you to provide a graphql endpoint url
+  Use this to quickly view the documentation for endpoints that don't need
+  additional configuration.
+*** Configuring endpoints
+This package provides the function `graphql-doc-add-api` to add endpoints to the alist `graphql-doc-apis`.
+These endpoints are then selectable by name by calling `graphql-doc`.
+
+**** Simple
+If the endpoint does not require autorization, you only need to provide a name, and an api configuration with a url.
+#+begin_src elisp
+(graphql-doc-add-api
+ "GDC (national cancer institute)"
+ `(:url "https://api.gdc.cancer.gov/v0/graphql"))
+#+end_src
+**** Authorization header
+If the endpoint does requires an autorization header (or any other additional headers),
+you can provide that with the `headers` property in your api configuration.
+#+begin_src elisp
+(graphql-doc-add-api
+ "My cool graphql endpoint"
+ `(:url "https://awesome-endpoints.com/v0/graphql"
+   :headers (("authorization" . "bearer my-secret-api-token")
+             ("Exta-Header" . "another example header"))))
+#+end_src
+**** Additional post body parameters
+Some endpoints may expect additional post body parameters, which you can provide
+with the `data` property in your api configuration.
+#+begin_src elisp
+(graphql-doc-add-api
+ "My cool graphql endpoint"
+ `(:url "https://awesome-endpoints.com/v0/graphql"
+   :data (("additional-data" . "example data")
+          ("authorization" . "this endpoint expects authorization in the post body!"))))
+#+end_src
 ** Keybindings
 | Binding     | Command             |
 |-------------+---------------------|
