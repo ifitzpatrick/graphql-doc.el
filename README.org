@@ -49,7 +49,7 @@ If the endpoint does not require autorization, you only need to provide a name, 
 #+end_src
 **** Authorization header
 If the endpoint does requires an autorization header (or any other additional headers),
-you can provide that with the `headers` property in your api configuration.
+you can provide that with the *headers* property in your api configuration.
 #+begin_src elisp
 (graphql-doc-add-api
  "My cool graphql endpoint"
@@ -59,7 +59,7 @@ you can provide that with the `headers` property in your api configuration.
 #+end_src
 **** Additional post body parameters
 Some endpoints may expect additional post body parameters, which you can provide
-with the `data` property in your api configuration.
+with the *data* property in your api configuration.
 #+begin_src elisp
 (graphql-doc-add-api
  "My cool graphql endpoint"
