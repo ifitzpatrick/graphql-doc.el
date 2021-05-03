@@ -2,7 +2,8 @@
 A GraphQL Documentation Explorer for Emacs
 
 Uses the GraphQL instrospection API to display documentation for queries, mutations,
-and types provided by graphql endpoints.
+and types provided by graphql endpoints. Inspired by the documentation explorer provided
+by [[https://github.com/graphql/graphiql][GraphiQL]].
 
 [[/assets/root.png]]
 [[/assets/queries.png]]
