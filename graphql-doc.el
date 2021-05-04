@@ -427,6 +427,7 @@ fragment TypeRef on __Type {
                           (graphql-doc--mutations)))))))))
         (promise-catch (lambda (reason) (message "failed to load %s" reason)))))))
 
+;;;###autoload
 (defun graphql-doc-open-url (url)
   "Open URL in graphql doc buffer."
   (interactive "surl: ")
@@ -434,6 +435,7 @@ fragment TypeRef on __Type {
    url
    `(:url ,url)))
 
+;;;###autoload
 (defun graphql-doc ()
   "Open graphql doc buffer."
   (interactive)
