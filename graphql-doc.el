@@ -1,7 +1,11 @@
-;;; graphql-doc.el --- GraphQL Doc -*- lexical-binding: t -*-
+;;; graphql-doc.el --- GraphQL Documentation Explorer -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2021 Ian Fitzpatrick <itfitzpatrick@gmail.com>
-;;
+
+;; Author: Ian Fitzpatrick
+;; Created: April 25, 2021
+;; Version: 0.1.1
+;; Package-Requires: ((emacs "26.1") (request "0.3.2") (promise "1.1"))
 ;; URL: https://github.com/ifitzpatrick/graphql-doc
 
 ;; This file is not part of GNU Emacs.
@@ -21,13 +25,13 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;; Author: Ian Fitzpatrick
-;; Created: April 25, 2021
-;; Package-Version: 0.1.0
-;; Package-Requires: ((emacs "26.1") (request "0.3.2") (promise "1.1"))
-
 ;;; Commentary:
 ;; GraphQL Documentation explorer
+;;
+;; Opens a buffer with clickable graphql documentation for queries and mutations
+;; generated from a graphql introspection query.  Use `graphql-doc` to start with
+;; a registered graphql api endpoint.  Use `graphql-doc-open-url` to start with
+;; an endpoint url.  Use `graphql-doc-add-api` to register an api endpoint.
 
 ;;; Code:
 
@@ -376,14 +380,14 @@ fragment TypeRef on __Type {
           (insert "\n\n")
           (graphql-doc--draw-object-description item)))
       items))))
-     
-(defvar graphql-doc-mode-map (make-sparse-keymap)
-  "The keymap for `graphql-doc-mode'.")
 
-;; Define a key in the keymap
-(define-key graphql-doc-mode-map (kbd "C-j") 'forward-button)
-(define-key graphql-doc-mode-map (kbd "C-k") 'backward-button)
-(define-key graphql-doc-mode-map (kbd "<backspace>") 'graphql-doc-go-back)
+(defvar graphql-doc-mode-map
+  (let ((keymap (make-sparse-keymap)))
+    (define-key keymap (kbd "C-j") 'forward-button)
+    (define-key keymap (kbd "C-k") 'backward-button)
+    (define-key keymap (kbd "<backspace>") 'graphql-doc-go-back)
+    keymap)
+  "The keymap for `graphql-doc-mode'.")
 
 (define-derived-mode graphql-doc-mode
   special-mode "GraphQL Doc"
