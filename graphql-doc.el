@@ -228,16 +228,32 @@ fragment TypeRef on __Type {
 (defvar-local graphql-doc--history nil
   "List of cons cells with a name and callback that can redraw each entry.")
 
+(defvar-local graphql-doc--current-view-name nil
+  "Current view name.")
+
+(defvar-local graphql-doc--current-view-callback nil
+  "Current view callback.")
+
 (defun graphql-doc--history-push (name callback)
   "Add history entry with NAME and CALLBACK."
-  (setq-local graphql-doc--history (cons `(,name . ,callback) graphql-doc--history)))
+  (when (and graphql-doc--current-view-name graphql-doc--current-view-callback)
+    (setq-local graphql-doc--history (cons `(,graphql-doc--current-view-name ,graphql-doc--current-view-callback ,(point)) graphql-doc--history)))
+  (setq-local graphql-doc--current-view-name name)
+  (setq-local graphql-doc--current-view-callback callback))
 
 (defun graphql-doc-go-back ()
   "Go back to previous history entry."
   (interactive)
-  (when (> (length graphql-doc--history) 1)
-    (setq-local graphql-doc--history (cdr graphql-doc--history))
-    (funcall (cdr (car graphql-doc--history)))))
+  (when (> (length graphql-doc--history) 0)
+    (let* ((current-view (car graphql-doc--history))
+           (name (nth 0 current-view))
+           (callback (nth 1 current-view))
+           (old-point (nth 2 current-view)))
+      (setq-local graphql-doc--history (cdr graphql-doc--history))
+      (setq-local graphql-doc--current-view-name name)
+      (setq-local graphql-doc--current-view-callback callback)
+      (funcall callback)
+      (goto-char old-point))))
 
 (defun graphql-doc--draw-view (callback)
   "Draw view with CALLBACK."
