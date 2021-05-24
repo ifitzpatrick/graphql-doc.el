@@ -1,4 +1,5 @@
 * GraphQL Doc
+[[https://melpa.org/#/graphql-doc][file:https://melpa.org/packages/graphql-doc-badge.svg]]
 A GraphQL Documentation Explorer for Emacs
 
 Uses the GraphQL instrospection API to display documentation for queries, mutations,
@@ -9,23 +10,6 @@ by [[https://github.com/graphql/graphiql][GraphiQL]].
 [[/assets/queries.png]]
 [[/assets/types.png]]
 
-** Installation and Configuration
-Using straight.el and use-package.el (see [[https://github.com/raxod502/straight.el#integration-with-use-package]])
-
-#+begin_src elisp
-(use-package graphql-doc
-  :straight '(graphql-doc
-              :type git
-              :host github
-              :repo "ifitzpatrick/graphql-doc.el")
-  :config
-  (graphql-doc-add-api
-   "GDC (national cancer institute)" ; Name that will be displayed in completing-read when you start graphql-doc
-   `(:url "https://api.gdc.cancer.gov/v0/graphql" ; url for graphql endpoint
-          :data nil ; alist of additional post body data items
-          :headers nil ; alist of additional headers
-          )))
-#+end_src
 ** Usage
 *** Opening the GraphQL Doc Explorer
 There are two commands provided to open up the graphql-doc explorer
