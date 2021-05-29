@@ -171,6 +171,11 @@ fragment TypeRef on __Type {
     (promise-catch (lambda (data)
                      (message "error: %s" data)))))
 
+(defgroup graphql-doc nil
+  "GraphQL documentation explorer options."
+  :prefix "graphql-doc-"
+  :group 'tools)
+
 (defcustom graphql-doc-apis nil
   "Alist mapping name to an api plist."
   :group 'graphql-doc
