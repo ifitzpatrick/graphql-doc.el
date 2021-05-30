@@ -261,10 +261,9 @@ fragment TypeRef on __Type {
 
 (defun graphql-doc--draw-view (callback)
   "Draw view with CALLBACK."
-  (setq inhibit-read-only t)
-  (erase-buffer)
-  (funcall callback)
-  (setq inhibit-read-only nil)
+  (let ((inhibit-read-only t))
+    (erase-buffer)
+    (funcall callback))
   (goto-char (point-min)))
 
 (defun graphql-doc--view (name callback)
