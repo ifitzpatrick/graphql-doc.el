@@ -1,5 +1,6 @@
 * GraphQL Doc
 [[https://melpa.org/#/graphql-doc][file:https://melpa.org/packages/graphql-doc-badge.svg]]
+
 A GraphQL Documentation Explorer for Emacs
 
 Uses the GraphQL instrospection API to display documentation for queries, mutations,
