@@ -6,7 +6,7 @@
 ;; Created: April 25, 2021
 ;; Version: 0.2.0
 ;; Package-Requires: ((emacs "26.1") (request "0.3.2") (promise "1.1"))
-;; URL: https://github.com/ifitzpatrick/graphql-doc
+;; URL: https://github.com/ifitzpatrick/graphql-doc.el
 ;; SPDX-License-Identifier: GPL-3.0-only
 
 ;; This file is not part of GNU Emacs.
