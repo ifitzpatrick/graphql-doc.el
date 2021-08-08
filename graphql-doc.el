@@ -163,8 +163,7 @@ fragment TypeRef on __Type {
        (plist-get api :url)
        (append
         (plist-get api :data)
-        `(("variables" . "")
-          ("query" . ,graphql-doc--introspection-query)))
+        `(("query" . ,graphql-doc--introspection-query)))
        (plist-get api :headers))
     (then (lambda (data)
             (setq-local graphql-doc--introspection-results data)))
