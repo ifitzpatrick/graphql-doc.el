@@ -133,15 +133,18 @@ fragment TypeRef on __Type {
   }
 }")
 
+(defvar graphql-doc--request-verb "POST")
+(defvar graphql-doc--payload-key :data)
+
 (defun graphql-doc--request (url data headers)
   "GraphQL request to URL with DATA and HEADERS."
   (promise-new
    (lambda (resolve reject)
      (request
        url
-       :type "POST"
+       :type graphql-doc--request-verb
        :parser 'json-read
-       :data
+       graphql-doc--payload-key
        data
        :headers
        headers
