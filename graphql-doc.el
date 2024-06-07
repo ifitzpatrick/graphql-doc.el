@@ -145,7 +145,7 @@ fragment TypeRef on __Type {
        :type graphql-doc--default-request-verb
        :parser 'json-read
        graphql-doc--default-payload-key
-       data
+       (json-encode data)
        :headers
        headers
        :error
